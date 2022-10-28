@@ -1,7 +1,0 @@
-## Interface: 90207
-## Title: SimpleQuestDialog
-## Notes: SimpleQuestDialog
-## Author: scholle
-## Version: 1.0
-
-SimpleQuestDialog.lua
