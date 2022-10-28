@@ -1,0 +1,8 @@
+## Interface: 10000
+## Title: SimpleQuestDialog
+## Notes: Makes quest dialogs easier to navigate
+## Author: scholle
+## Version: 1.0.0
+
+SimpleQuestDialog.lua
+SimpleQuestDialog.xml
