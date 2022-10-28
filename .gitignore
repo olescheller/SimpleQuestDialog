@@ -4,3 +4,4 @@
 !scripts/**
 !.gitignore
 !README.md
+!develop.ps1

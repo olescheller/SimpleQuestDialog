@@ -1,0 +1,1 @@
+nodemon -w src\ -e * --exec "powershell .\scripts\dev-deploy.ps1"

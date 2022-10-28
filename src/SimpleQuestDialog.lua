@@ -184,6 +184,7 @@ local isPlayerFrameInitialized = false
 local isQuestDetailScrollFrameInitialized = false
 local isQuestRewardScrollFrameInitialized = false
 local isGossipGreetingScrollFrameInitialized = false
+local isGossipFrameInitialized = false
 local isQuestFrameGreetingPanelInitialized = false
 local isQuestProgressScrollFrameInitialized = false
 
@@ -204,6 +205,10 @@ function SimpleQuestDialog_OnUpdate(self, elapsed)
     if not isGossipGreetingScrollFrameInitialized and GossipGreetingScrollFrame ~= nil then
         GossipGreetingScrollFrame:SetScript("OnMouseDown", OnClickGossipGreetingScrollFrame)
         isGossipGreetingScrollFrameInitialized = true
+    end
+    if not isGossipFrameInitialized and GossipFrame.GreetingPanel.ScrollBox ~= nil then
+        GossipFrame.GreetingPanel.ScrollBox:SetScript("OnMouseDown", OnClickGossipGreetingScrollFrame)
+        isGossipFrameInitialized = true
     end    
     if not isQuestFrameGreetingPanelInitialized and QuestFrameGreetingPanel ~= nil then
         QuestFrameGreetingPanel:SetScript("OnMouseDown", OnClickQuestFrameGreetingPanel)
@@ -212,16 +217,16 @@ function SimpleQuestDialog_OnUpdate(self, elapsed)
     if not isQuestProgressScrollFrameInitialized and QuestProgressScrollFrame ~= nil then
         QuestProgressScrollFrame:SetScript("OnMouseDown", OnClickQuestProgressScrollFrame)
         isQuestProgressScrollFrameInitialized = true
-    end
+    end 
 
 
     local scale, x, y = UIParent:GetEffectiveScale(), GetCursorPosition();
     local isOverDetail = QuestDetailScrollFrame ~= nil and MouseIsOver(QuestDetailScrollFrame) and QuestDetailScrollFrame:IsVisible()
     local isOverGossip = GossipGreetingScrollFrame ~= nil and MouseIsOver(GossipGreetingScrollFrame) and GossipGreetingScrollFrame:IsVisible()
+    local isOverGossipFrame = GossipFrame.GreetingPanel.ScrollBox ~= nil and MouseIsOver(GossipFrame.GreetingPanel.ScrollBox) and GossipFrame.GreetingPanel.ScrollBox:IsVisible()
     local isOverQuestGreeting = QuestGreetingScrollFrame ~= nil and MouseIsOver(QuestGreetingScrollFrame) and QuestGreetingScrollFrame:IsVisible()
     local isOverReward = QuestRewardScrollFrame ~= nil and MouseIsOver(QuestRewardScrollFrame) and QuestRewardScrollFrame:IsVisible()
     local isOverQuestProgress = QuestProgressScrollFrame ~= nil and MouseIsOver(QuestProgressScrollFrame) and QuestProgressScrollFrame:IsVisible()
-
     if isOverDetail then
         t:SetText("Click to accept")
         resizeTooltip()
@@ -255,7 +260,7 @@ function SimpleQuestDialog_OnUpdate(self, elapsed)
                 f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
             end
         end 
-    elseif isOverGossip then
+    elseif isOverGossip or isOverGossipFrame then
         if C_GossipInfo.GetNumActiveQuests() > 0 then
             local activeQuestIndex = getIndexOfTopFinishedActiveQuest()
             local activeQuestName, isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getActiveQuestInfo(activeQuestIndex)
