@@ -71,6 +71,7 @@ local function OnClickQuestRewardScrollFrame(self, button)
 end
 
 local function OnClickGossipGreetingScrollFrame(self, button)
+    print("OnClickGossipGreetingScrollFrame")
     local numberQuests = C_GossipInfo.GetNumAvailableQuests()
     if (numberQuests > 0) then
         C_GossipInfo.SelectAvailableQuest(1)
@@ -87,7 +88,27 @@ local function OnClickGossipGreetingScrollFrame(self, button)
     end
 end
 
+local function OnClickGossipFrame(self, button)
+    print("OnClickGossipFrame")
+    local availableQuests = C_GossipInfo.GetAvailableQuests()
+    if (#availableQuests > 0) then 
+        C_GossipInfo.SelectAvailableQuest(availableQuests[1].questID)
+    else
+        local numberActiveQuests = C_GossipInfo.GetNumActiveQuests()
+        local info = C_GossipInfo.GetActiveQuests()
+        for i = 1, numberActiveQuests, 1 do
+            local isComplete = info[i]['isComplete']
+            if isComplete then
+                C_GossipInfo.SelectActiveQuest(info[i].questID)
+                break
+            end
+        end
+    end
+end
+
+
 local function OnClickQuestGreetingScrollFrame(self, button)
+    print("OnClickQuestGreetingScrollFrame")
     local numberQuests = GetNumAvailableQuests()
     if (numberQuests > 0) then
         SelectAvailableQuest(1)
@@ -162,21 +183,13 @@ local function init()
     for _, button in pairs(LFGListFrame.SearchPanel.ScrollFrame.buttons) do
         button:SetScript("OnDoubleClick", OnDoubleClick)
     end
-    -- PlayerFrame:SetScript("OnDoubleClick", OnDoubleClickPlayer)
-    -- QuestRewardScrollFrame:SetScript("OnMouseDown", OnClickQuestRewardScrollFrame)
-    -- GossipGreetingScrollFrame:SetScript("OnMouseDown", OnClickGossipGreetingScrollFrame)
-    -- QuestFrameGreetingPanel:GetParent():SetScript("OnMouseDown", OnClickQuestGreetingScrollFrame)
-    -- QuestProgressScrollFrame:SetScript("OnMouseDown", OnClickQuestProgressScrollFrame)
 end
 
-function frame:OnEvent(event, arg1, arg2, ...)
+function frame:OnEvent(event, arg1, ...) 
     if event == "ADDON_LOADED" and arg1 == "SimpleQuestDialog" then
         -- init()
     elseif event == "GOSSIP_SHOW" then
-        print(arg1, arg2, ...)
     elseif event == "QUEST_GREETING" then
-        print(arg1, arg2, ...)
-
     end
 end
 
@@ -207,7 +220,7 @@ function SimpleQuestDialog_OnUpdate(self, elapsed)
         isGossipGreetingScrollFrameInitialized = true
     end
     if not isGossipFrameInitialized and GossipFrame.GreetingPanel.ScrollBox ~= nil then
-        GossipFrame.GreetingPanel.ScrollBox:SetScript("OnMouseDown", OnClickGossipGreetingScrollFrame)
+        GossipFrame.GreetingPanel.ScrollBox:SetScript("OnMouseDown", OnClickGossipFrame)
         isGossipFrameInitialized = true
     end    
     if not isQuestFrameGreetingPanelInitialized and QuestFrameGreetingPanel ~= nil then
