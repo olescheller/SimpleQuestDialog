@@ -162,7 +162,7 @@ local function getActiveQuestInfo_OLD_API(index)
     local isTrivial, frequency, isRepeatable, isLegendary, questID = GetAvailableQuestInfo(index)
     local activeQuestID = GetActiveQuestID(index);
     return title, isComplete, isLegendary,
-    frequency, isRepeatable,  QuestUtil.ShouldQuestIconsUseCampaignAppearance(activeQuestID), C_QuestLog.IsQuestCalling(activeQuestID)
+    frequency, isRepeatable,  QuestUtil.ShouldQuestIconsUseCampaignAppearance(questID), C_QuestLog.IsQuestCalling(questID)
 end
 
 local function getAvailableQuestInfo(index)
@@ -200,6 +200,7 @@ local isGossipGreetingScrollFrameInitialized = false
 local isGossipFrameInitialized = false
 local isQuestFrameGreetingPanelInitialized = false
 local isQuestProgressScrollFrameInitialized = false
+local isQuestGreetingScrollFrameInitialized = false
 
 -- Functions Section
 function SimpleQuestDialog_OnUpdate(self, elapsed)
@@ -227,6 +228,10 @@ function SimpleQuestDialog_OnUpdate(self, elapsed)
         QuestFrameGreetingPanel:SetScript("OnMouseDown", OnClickQuestFrameGreetingPanel)
         isQuestFrameGreetingPanelInitialized = true
     end
+    if not isQuestGreetingScrollFrameInitialized and QuestGreetingScrollFrame ~= nil then
+        QuestGreetingScrollFrame:SetScript("OnMouseDown", OnClickQuestGreetingScrollFrame)
+        isQuestGreetingScrollFrameInitialized = true
+    end
     if not isQuestProgressScrollFrameInitialized and QuestProgressScrollFrame ~= nil then
         QuestProgressScrollFrame:SetScript("OnMouseDown", OnClickQuestProgressScrollFrame)
         isQuestProgressScrollFrameInitialized = true
@@ -251,45 +256,50 @@ function SimpleQuestDialog_OnUpdate(self, elapsed)
         f:Show()
         f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
     elseif isOverQuestGreeting then
-        local activeQuestIndex = getIndexOfTopFinishedActiveQuest_OLD_API()
-            if(activeQuestIndex ~= nil) then
-                local activeQuestName, isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getActiveQuestInfo_OLD_API(activeQuestIndex)
-                t:SetText("Click to select " ..
-                    "|T" ..
-                    QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign,
-                        isCovenantCalling) .. ":16:16:0:0:64:64:4:60:4:60|t " .. activeQuestName .. "")
-                resizeTooltip()
-                f:Show()
-                f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
+        print("isOverQuestGreeting")
+        -- print("isOverQuestGreeting")
+        -- local activeQuestIndex = getIndexOfTopFinishedActiveQuest_OLD_API()
+        --     if(activeQuestIndex ~= nil) then
+        --         local activeQuestName, isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getActiveQuestInfo_OLD_API(activeQuestIndex)
+        --         t:SetText("Click to select " ..
+        --             "|T" ..
+        --             QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign,
+        --                 isCovenantCalling) .. ":16:16:0:0:64:64:4:60:4:60|t " .. activeQuestName .. "")
+        --         resizeTooltip()
+        --         f:Show()
+        --         f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
         
-        else if GetNumAvailableQuests() > 0 then
-                local availableQuestName, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getAvailableQuestInfo_OLD_API(1)
-                t:SetText("Click to select " ..
-                    "|T" ..
-                    QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling) ..
-                    ":16:16:0:0:64:64:4:60:4:60|t " .. availableQuestName .. "")
-                resizeTooltip()
-                f:Show()
-                f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
-            end
-        end 
+        -- else if GetNumAvailableQuests() > 0 then
+        --         local availableQuestName, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getAvailableQuestInfo_OLD_API(1)
+        --         t:SetText("Click to select " ..
+        --             "|T" ..
+        --             QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling) ..
+        --             ":16:16:0:0:64:64:4:60:4:60|t " .. availableQuestName .. "")
+        --         resizeTooltip()
+        --         f:Show()
+        --         f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
+        --     end
+        -- end 
     elseif isOverGossip or isOverGossipFrame then
-        if C_GossipInfo.GetNumActiveQuests() > 0 then
-            local activeQuestIndex = getIndexOfTopFinishedActiveQuest()
-            local activeQuestName, isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getActiveQuestInfo(activeQuestIndex)
+        local activeQuests = C_GossipInfo.GetActiveQuests()
+        local availableQuests = C_GossipInfo.GetAvailableQuests()
+        
+        local activeQuestIndex = getIndexOfTopFinishedActiveQuest()
+        if #activeQuests > 0 and activeQuestIndex ~= nil then
             t:SetText("Click to select " ..
                 "|T" ..
-                QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign,
+                GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign,
                     isCovenantCalling) .. ":16:16:0:0:64:64:4:60:4:60|t " .. activeQuestName .. "")
             resizeTooltip()
             f:Show()
             f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
-        else if C_GossipInfo.GetNumAvailableQuests() > 0 then
-                local availableQuestName, isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling = getAvailableQuestInfo(1)
+        else if #availableQuests > 0 then
+                local q = availableQuests[1]
                 t:SetText("Click to select " ..
                     "|T" ..
-                    QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling) ..
-                    ":16:16:0:0:64:64:4:60:4:60|t " .. availableQuestName .. "")
+                    GetQuestIconOfferForQuestID(q.questID) ..
+                    ":16:16:0:0:64:64:4:60:4:60|t " .. q.title)
+
                 resizeTooltip()
                 f:Show()
                 f:SetPoint("BOTTOMLEFT", UIParent, x / scale + 10, y / scale)
@@ -312,3 +322,33 @@ end
 frame:SetScript("OnUpdate", SimpleQuestDialog_OnUpdate)
 
 frame:SetScript("OnEvent", frame.OnEvent)
+
+function GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCovenantCalling)
+	if isLegendary then
+		return "Interface/GossipFrame/AvailableLegendaryQuestIcon", false;
+	elseif isCampaign then
+		return "Interface/GossipFrame/CampaignAvailableQuestIcon", true;
+	elseif isCovenantCalling then
+		return "Interface/GossipFrame/CampaignAvailableDailyQuestIcon", true;
+	elseif frequency == Enum.QuestFrequency.Daily then
+		return "Interface/GossipFrame/DailyQuestIcon", false;
+	elseif isRepeatable then
+		return "Interface/GossipFrame/DailyActiveQuestIcon", false;
+	end
+
+	return "Interface/GossipFrame/AvailableQuestIcon", false;
+end
+
+function GetQuestIconOfferForQuestID(questID)
+	local quest = QuestCache:Get(questID);
+	return GetQuestIconOffer(quest.isLegendary, quest.frequency, quest.isRepeatable, ShouldQuestIconsUseCampaignAppearance(questID));
+end
+
+function ShouldQuestIconsUseCampaignAppearance(questID)
+	local quest = QuestCache:Get(questID);
+	if quest:IsCampaign() then
+		return not CampaignCache:Get(quest:GetCampaignID()):UsesNormalQuestIcons();
+	end
+
+	return false;
+end
