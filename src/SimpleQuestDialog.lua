@@ -31,10 +31,10 @@ f:SetPoint("BOTTOMLEFT", UIParent, 0, 0)
 local t = f:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 local t2 = f:CreateFontString(nil, "OVERLAY", "GameTooltipText")
 t:SetPoint("CENTER", 0, 0)
-t2:SetPoint("BOTTOMRIGHT", 0, -10)
+-- t2:SetPoint("BOTTOMRIGHT", 0, -10)
 t:SetText("Click to accept")
-t2:SetText("SimpleQuestDialog beta1")
-t2:SetFont("Fonts\\ARIALN.ttf", 10, "OUTLINE")
+-- t2:SetText("SimpleQuestDialog beta1")
+-- t2:SetFont("Fonts\\ARIALN.ttf", 10, "OUTLINE")
 
 f:SetBackdrop({ bgFile = "Interface/Tooltips/UI-Tooltip-Background",
     edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
@@ -379,4 +379,3 @@ function ShouldQuestIconsUseCampaignAppearance(questID)
 
 	return false;
 end
-
